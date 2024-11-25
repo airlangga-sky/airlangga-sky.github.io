@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Ular Tangga</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            text-align: center;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(10, 50px);
+            grid-template-rows: repeat(10, 50px);
+            gap: 2px;
+            margin-top: 20px;
+        }
+
+        .board div {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #fff;
+            border: 1px solid #000;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #player {
+            width: 20px;
+            height: 20px;
+            background-color: red;
+            position: absolute;
+        }
+    </style>
+</head>
+<body>
+    <div class="board">
+        <!-- Kotak-kotak papan ular tangga akan dibuat di sini -->
+    </div>
+    <button onclick="rollDice()">Gulirkan Dadu</button>
+    <div id="player"></div>
+
+    <script>
+        let currentPlayerPosition = 1;
+
+        function createBoard() {
+            const board = document.querySelector(".board");
+            let count = 1;
+            let isEvenRow = true;
+
+            for (let row = 10; row >= 1; row--) {
+                for (let col = 1; col <= 10; col++) {
+                    const square = document.createElement("div");
+                    square.textContent = count;
+
+                    // Alternating row direction
+                    if (isEvenRow) {
+                        board.appendChild(square);
+                    } else {
+                        const reversedCol = 11 - col;
+                        board.appendChild(square);
+                    }
+
+                    count++;
+                }
+                isEvenRow = !isEvenRow;
+            }
+        }
+
+        function rollDice() {
+            const diceValue = Math.floor(Math.random() * 6) + 1;
+            movePlayer(diceValue);
+        }
+
+        function movePlayer(steps) {
+            const player = document.getElementById("player");
+            for (let i = 0; i < steps; i++) {
+                currentPlayerPosition++;
+                if (currentPlayerPosition > 100) {
+                    alert("Player 1 wins!");
+                    resetGame();
+                    return;
+                }
+                const square = document.querySelector(`.board div:nth-child(${currentPlayerPosition})`);
+                player.style.left = square.offsetLeft + "px";
+                player.style.top = square.offsetTop + "px";
+            }
+        }
+
+        function resetGame() {
+            currentPlayerPosition = 1;
+            const player = document.getElementById("player");
+            player.style.left = "0";
+            player.style.top = "0";
+        }
+
+        createBoard();
+    </script>
+</body>
+</html>

@@ -1,0 +1,151 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Index Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"></link>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-gray-100 font-roboto">
+    <header class="bg-blue-600 text-white p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold">PDF Index Generator</h1>
+            <nav>
+                <ul class="flex space-x-4">
+                    <li><a href="#" class="hover:underline">Home</a></li>
+                    <li><a href="#" class="hover:underline">Features</a></li>
+                    <li><a href="#" class="hover:underline">Pricing</a></li>
+                    <li><a href="#" class="hover:underline">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container mx-auto mt-10 p-4 bg-white shadow-md rounded-lg">
+        <h2 class="text-xl font-semibold mb-4">Upload your PDF to generate an index</h2>
+        <form id="pdfForm" class="space-y-4">
+            <div>
+                <label for="pdfFile" class="block text-sm font-medium text-gray-700">Select PDF file</label>
+                <input type="file" id="pdfFile" name="pdfFile" accept="application/pdf" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+            </div>
+            <div>
+                <label for="indexType" class="block text-sm font-medium text-gray-700">Index Type</label>
+                <select id="indexType" name="indexType" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    <option value="alphabetical">Alphabetical</option>
+                    <option value="byPage">By Page</option>
+                </select>
+            </div>
+            <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Generate Index</button>
+        </form>
+        <div id="result" class="mt-4 hidden">
+            <h3 class="text-lg font-semibold">Your index has been generated!</h3>
+            <a id="downloadLink" href="#" class="text-blue-600 hover:underline">Download Index as Word Document</a>
+        </div>
+    </main>
+
+    <footer class="bg-gray-800 text-white mt-10 p-4">
+        <div class="container mx-auto text-center">
+            <p>&copy; 2023 PDF Index Generator. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('pdfForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            // Simulate index generation and Word document creation
+            setTimeout(function() {
+                document.getElementById('result').classList.remove('hidden');
+                const link = document.createElement('a');
+                link.href = 'data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,' + generateWordDocument();
+                link.download = 'index.docx';
+                document.getElementById('downloadLink').href = link.href;
+            }, 2000);
+        });
+
+        function generateWordDocument() {
+            // This function should generate a base64 encoded Word document with the index
+            // For the sake of this example, we will return a base64 encoded string of a simple Word document
+            const content = `
+                <w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+                    <w:body>
+                        <w:p>
+                            <w:r>
+                                <w:t>Index</w:t>
+                            </w:r>
+                        </w:p>
+                        <w:tbl>
+                            <w:tr>
+                                <w:tc>
+                                    <w:p>
+                                        <w:r>
+                                            <w:t>Term</w:t>
+                                        </w:r>
+                                    </w:p>
+                                </w:tc>
+                                <w:tc>
+                                    <w:p>
+                                        <w:r>
+                                            <w:t>Page</w:t>
+                                        </w:r>
+                                    </w:p>
+                                </w:tc>
+                            </w:tr>
+                            <w:tr>
+                                <w:tc>
+                                    <w:p>
+                                        <w:r>
+                                            <w:t>Example Term 1</w:t>
+                                        </w:r>
+                                    </w:p>
+                                </w:tc>
+                                <w:tc>
+                                    <w:p>
+                                        <w:r>
+                                            <w:t>1</w:t>
+                                        </w:r>
+                                    </w:p>
+                                </w:tc>
+                            </w:tr>
+                            <w:tr>
+                                <w:tc>
+                                    <w:p>
+                                        <w:r>
+                                            <w:t>Example Term 2</w:t>
+                                        </w:r>
+                                    </w:p>
+                                </w:tc>
+                                <w:tc>
+                                    <w:p>
+                                        <w:r>
+                                            <w:t>2</w:t>
+                                        </w:r>
+                                    </w:p>
+                                </w:tc>
+                            </w:tr>
+                            <w:tr>
+                                <w:tc>
+                                    <w:p>
+                                        <w:r>
+                                            <w:t>Example Term 3</w:t>
+                                        </w:r>
+                                    </w:p>
+                                </w:tc>
+                                <w:tc>
+                                    <w:p>
+                                        <w:r>
+                                            <w:t>3</w:t>
+                                        </w:r>
+                                    </w:p>
+                                </w:tc>
+                            </w:tr>
+                        </w:tbl>
+                    </w:body>
+                </w:document>
+            `;
+            return btoa(unescape(encodeURIComponent(content)));
+        }
+    </script>
+</body>
+</html>

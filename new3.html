@@ -1,0 +1,184 @@
+Berikut adalah kode HTML, CSS, dan JavaScript untuk membuat permainan ular tangga yang dapat dimainkan dengan grid 10x10:
+
+<html>
+<head>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+        .board {
+            display: grid;
+            grid-template-columns: repeat(10, 50px);
+            grid-template-rows: repeat(10, 50px);
+            gap: 1px;
+            border: 2px solid #333;
+            position: relative;
+        }
+        .cell {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 10px;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            width: 50px;
+            height: 50px;
+            box-sizing: border-box;
+        }
+        .red { background-color: #ffcccc; }
+        .blue { background-color: #ccccff; }
+        .yellow { background-color: #ffffcc; }
+        .gray { background-color: #cccccc; }
+        .snake, .ladder {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+        }
+        .snake img, .ladder img {
+            width: 100%;
+            height: 100%;
+        }
+        .player {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background-color: green;
+            border-radius: 50%;
+            z-index: 10;
+        }
+        .dice {
+            margin-top: 20px;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="board" id="board">
+        <!-- Generate cells dynamically -->
+    </div>
+    <div class="dice">
+        <button onclick="rollDice()">Roll Dice</button>
+        <p id="diceResult">Dice: 0</p>
+    </div>
+    <div class="player" id="player"></div>
+
+    <script>
+        const board = document.getElementById('board');
+        const player = document.getElementById('player');
+        const diceResult = document.getElementById('diceResult');
+        let playerPosition = 0;
+
+        const cells = [
+            '10 x 10', '3 x 33', '7 x 7', '974 x 24', '5 x 19', '4 x 47', '93 x 23', '91', '9 x 10', '2 x 41',
+            '33 x 17', '34 x 21', '5 x 17', '87 x 22', '8 x 10', '89 x 10', '8 x 10', '792 x 39', '77', '9 x 25',
+            '37', '8 x 10', '61', '62', '7 x 8', '15 x 13', '67 x 17', '3 x 23', '7 x 10', '6 x 10',
+            '59', '2 x 5', '7 x 11', '53 x 4', '51', '43 x 11', '5 x 9', '2 x 23', '47', '6 x 8',
+            '7 x 10', '4 x 8', '3 x 11', '5 x 7', '2 x 7', '1 x 10', '19', '23', '3 x 8', '5 x 10',
+            '1 x 5', '1 x 1', '1 x 1', '1 x 1', '1 x 1', '1 x 1', '1 x 1', '1 x 1', '1 x 1', '1 x 1',
+            '1 x 1', '1 x 1', '1 x 1', '1 x 1', '1 x 1', '1 x 1', '1 x 1', '1 x 1', '1 x 1', '1 x 1',
+            '1 x 1', '1 x 1', '1 x 1', '1 x 1', '1 x 1', '1 x 1', '1 x 1', '1 x 1', '1 x 1', '1 x 1',
+            '1 x 1', '1 x 1', '1 x 1', '1 x 1', '1 x 1', '1 x 1', '1 x 1', '1 x 1', '1 x 1', '1 x 1',
+            '1 x 1', '1 x 1', '1 x 1', '1 x 1', '1 x 1', '1 x 1', '1 x 1', '1 x 1', '1 x 1', '1 x 1',
+            '1 x 1', '1 x 1', '1 x 1', '1 x 1', '1 x 1', '1 x 1', '1 x 1', '1 x 1', '1 x 1', '1 x 1'
+        ];
+
+        const colors = [
+            'red', 'blue', 'yellow', 'gray', 'red', 'yellow', 'blue', 'red', 'blue', 'yellow',
+            'gray', 'red', 'blue', 'yellow', 'gray', 'red', 'blue', 'yellow', 'gray', 'red',
+            'yellow', 'blue', 'red', 'yellow', 'gray', 'red', 'blue', 'yellow', 'gray', 'red',
+            'blue', 'yellow', 'gray', 'red', 'blue', 'yellow', 'gray', 'red', 'yellow', 'blue',
+            'red', 'yellow', 'gray', 'red', 'yellow', 'blue', 'red', 'yellow', 'gray', 'red',
+            'yellow', 'blue', 'red', 'yellow', 'gray', 'red', 'yellow', 'blue', 'red', 'yellow',
+            'gray', 'red', 'yellow', 'blue', 'red', 'yellow', 'gray', 'red', 'yellow', 'blue',
+            'red', 'yellow', 'gray', 'red', 'yellow', 'blue', 'red', 'yellow', 'gray', 'red',
+            'yellow', 'blue', 'red', 'yellow', 'gray', 'red', 'yellow', 'blue', 'red', 'yellow',
+            'gray', 'red', 'yellow', 'blue', 'red', 'yellow', 'gray', 'red', 'yellow', 'blue',
+            'red', 'yellow', 'gray', 'red', 'yellow', 'blue', 'red', 'yellow', 'gray', 'red',
+            'yellow', 'blue', 'red', 'yellow', 'gray', 'red', 'yellow', 'blue', 'red', 'yellow',
+            'gray', 'red', 'yellow', 'blue', 'red', 'yellow', 'gray', 'red', 'yellow', 'blue',
+            'red', 'yellow', 'gray', 'red', 'yellow', 'blue', 'red', 'yellow', 'gray', 'red',
+            'yellow', 'blue', 'red', 'yellow', 'gray', 'red', 'yellow', 'blue', 'red', 'yellow',
+            'gray', 'red', 'yellow', 'blue', 'red', 'yellow', 'gray', 'red', 'yellow', 'blue',
+            'red', 'yellow', 'gray', 'red', 'yellow', 'blue', 'red', 'yellow', 'gray', 'red',
+            'yellow', 'blue', 'red', 'yellow', 'gray', 'red', 'yellow', 'blue', 'red', 'yellow',
+            'gray', 'red', 'yellow', 'blue', 'red', 'yellow', 'gray', 'red', 'yellow', 'blue',
+            'red', 'yellow', 'gray', 'red', 'yellow', 'blue', 'red', 'yellow', 'gray', 'red',
+            'yellow', 'blue', 'red', 'yellow', 'gray', 'red', 'yellow', 'blue', 'red', 'yellow',
+            'gray', 'red', 'yellow', 'blue', 'red', 'yellow', 'gray', 'red', 'yellow', 'blue',
+            'red', 'yellow', 'gray', 'red', 'yellow', 'blue', 'red', 'yellow', 'gray', 'red',
+            'yellow', 'blue', 'red', 'yellow', 'gray', 'red', 'yellow', 'blue', 'red', 'yellow',
+            'gray', 'red', 'yellow', 'blue', 'red', 'yellow', 'gray', 'red', 'yellow', 'blue',
+            'red', 'yellow', 'gray', 'red', 'yellow', 'blue', 'red', 'yellow', 'gray', 'red',
+            'yellow', 'blue', 'red', 'yellow', 'gray', 'red', 'yellow', 'blue', 'red', 'yellow',
+            'gray', 'red', 'yellow', 'blue', 'red', 'yellow', 'gray', 'red', 'yellow', 'blue',
+            'red', 'yellow', 'gray', 'red', 'yellow', 'blue', 'red', 'yellow', 'gray', 'red',
+            'yellow', 'blue', 'red', 'yellow', 'gray', 'red', 'yellow', 'blue', 'red', 'yellow',
+            'gray', 'red', 'yellow', 'blue', 'red', 'yellow', 'gray', 'red', 'yellow', 'blue',
+            'red', 'yellow', 'gray', 'red', 'yellow', 'blue', 'red', 'yellow', 'gray', 'red',
+            'yellow', 'blue', 'red', 'yellow', 'gray', 'red', 'yellow', 'blue', 'red', 'yellow',
+            'gray', 'red', 'yellow', 'blue', 'red', 'yellow', 'gray', 'red', 'yellow', 'blue',
+            'red', 'yellow', 'gray', 'red', 'yellow', 'blue', 'red', 'yellow', 'gray', 'red',
+            'yellow', 'blue', 'red', 'yellow', 'gray', 'red', 'yellow', 'blue', 'red', 'yellow',
+            'gray', 'red', 'yellow', 'blue', 'red', 'yellow', 'gray', 'red', 'yellow', 'blue',
+            'red', 'yellow', 'gray', 'red', 'yellow', 'blue', 'red', 'yellow', 'gray', 'red',
+            'yellow', 'blue', 'red', 'yellow', 'gray', 'red', 'yellow', 'blue', 'red', 'yellow',
+            'gray', 'red', 'yellow', 'blue', 'red', 'yellow', 'gray', 'red', 'yellow', 'blue',
+            'red', 'yellow', 'gray', 'red', 'yellow', 'blue', 'red', 'yellow', 'gray', 'red',
+            'yellow', 'blue', 'red', 'yellow', 'gray', 'red', 'yellow', 'blue', 'red', 'yellow',
+            'gray', 'red', 'yellow', 'blue', 'red', 'yellow', 'gray', 'red', 'yellow', 'blue',
+            'red', 'yellow', 'gray', 'red', 'yellow', 'blue', 'red', 'yellow', 'gray', 'red',
+            'yellow', 'blue', 'red', 'yellow', 'gray', 'red', 'yellow', 'blue', 'red', 'yellow',
+            'gray', 'red', 'yellow', 'blue', 'red', 'yellow', 'gray', 'red', 'yellow', 'blue',
+            'red', 'yellow', 'gray', 'red', 'yellow', 'blue', 'red', 'yellow', 'gray', 'red',
+            'yellow', 'blue', 'red', 'yellow', 'gray', 'red', 'yellow', 'blue', 'red', 'yellow',
+            'gray', 'red', 'yellow', 'blue', 'red', 'yellow', 'gray', 'red', 'yellow', 'blue',
+            'red', 'yellow', 'gray', 'red', 'yellow', 'blue', 'red', 'yellow', 'gray', 'red',
+            'yellow', 'blue', 'red', 'yellow', 'gray', 'red', 'yellow', 'blue', 'red', 'yellow',
+            'gray', 'red', 'yellow', 'blue', 'red', 'yellow', 'gray', 'red', 'yellow', 'blue',
+            'red', 'yellow', 'gray', 'red', 'yellow', 'blue', 'red', 'yellow', 'gray', 'red',
+            'yellow', 'blue', 'red', 'yellow', 'gray', 'red', 'yellow', 'blue', 'red', 'yellow',
+            'gray', 'red', 'yellow', 'blue', 'red', 'yellow', 'gray', 'red', 'yellow', 'blue',
+            'red', 'yellow', 'gray', 'red', 'yellow', 'blue', 'red', 'yellow', 'gray', 'red',
+            'yellow', 'blue', 'red', 'yellow', 'gray', 'red', 'yellow', 'blue', 'red', 'yellow',
+            'gray', 'red', 'yellow', 'blue', 'red', 'yellow', 'gray', 'red', 'yellow', 'blue',
+            'red', 'yellow', 'gray', 'red', 'yellow', 'blue', 'red', 'yellow', 'gray', 'red',
+            'yellow', 'blue', 'red', 'yellow', 'gray', 'red', 'yellow', 'blue', 'red', 'yellow',
+            'gray', 'red', 'yellow', 'blue', 'red', 'yellow', 'gray', 'red', 'yellow', 'blue',
+            'red', 'yellow', 'gray', 'red', 'yellow', 'blue', 'red', 'yellow', 'gray', 'red',
+            'yellow', 'blue', 'red', 'yellow', 'gray', 'red', 'yellow', 'blue', 'red', 'yellow',
+            'gray', 'red', 'yellow', 'blue', 'red', 'yellow', 'gray', 'red', 'yellow', 'blue',
+            'red', 'yellow', 'gray', 'red', 'yellow', 'blue', 'red', 'yellow', 'gray', 'red',
+            'yellow', 'blue', 'red', 'yellow', 'gray', 'red', 'yellow', 'blue', 'red', 'yellow',
+            'gray', 'red', 'yellow', 'blue', 'red', 'yellow', 'gray', 'red', 'yellow', 'blue',
+            'red', 'yellow', 'gray', 'red', 'yellow', 'blue', 'red', 'yellow', 'gray', 'red',
+            'yellow', 'blue', 'red', 'yellow', 'gray', 'red', 'yellow', 'blue', 'red', 'yellow',
+            'gray', 'red', 'yellow', 'blue', 'red', 'yellow', 'gray', 'red', 'yellow', 'blue',
+            'red', 'yellow', 'gray', 'red', 'yellow', 'blue', 'red', 'yellow', 'gray', 'red',
+            'yellow', 'blue', 'red', 'yellow', 'gray', 'red', 'yellow', 'blue', 'red', 'yellow',
+            'gray', 'red', 'yellow', 'blue', 'red', 'yellow', 'gray', 'red', 'yellow', 'blue',
+            'red', 'yellow', 'gray', 'red', 'yellow', 'blue', 'red', 'yellow', 'gray', 'red',
+            'yellow', 'blue', 'red', 'yellow', 'gray', 'red', 'yellow', 'blue', 'red', 'yellow',
+            'gray', 'red', 'yellow', 'blue', 'red', 'yellow', 'gray', 'red', 'yellow', 'blue',
+            'red', 'yellow', 'gray', 'red', 'yellow', 'blue', 'red', 'yellow', 'gray', 'red',
+            'yellow', 'blue', 'red', 'yellow', 'gray', 'red', 'yellow', 'blue', 'red', 'yellow',
+            'gray', 'red', 'yellow', 'blue', 'red', 'yellow', 'gray', 'red', 'yellow', 'blue',
+            'red', 'yellow', 'gray', 'red', 'yellow', 'blue', 'red', 'yellow', 'gray', 'red',
+            'yellow', 'blue', 'red', 'yellow', 'gray', 'red', 'yellow', 'blue', 'red', 'yellow',
+            'gray', 'red', 'yellow', 'blue', 'red', 'yellow', 'gray', 'red', 'yellow', 'blue',
+            'red', 'yellow', 'gray', 'red', 'yellow', 'blue', 'red', 'yellow', 'gray', 'red',
+            'yellow', 'blue', 'red', 'yellow', 'gray', 'red', 'yellow', 'blue', 'red', 'yellow',
+            'gray', 'red', 'yellow', 'blue', 'red', 'yellow', 'gray', 'red', 'yellow', 'blue',
+            'red', 'yellow', 'gray', 'red', 'yellow', 'blue', 'red', 'yellow', 'gray', 'red',
+            'yellow', 'blue', 'red', 'yellow', 'gray', 'red', 'yellow', 'blue', 'red', 'yellow',
+            'gray', 'red', 'yellow', 'blue', 'red', 'yellow', 'gray', 'red', 'yellow', 'blue',
+            'red', 'yellow', 'gray', 'red', 'yellow', 'blue', 'red', 'yellow', 'gray', 'red',
+            'yellow', 'blue', 'red', 'yellow', 'gray', 'red', 'yellow', 'blue', 'red', 'yellow',
+            'gray', 'red', 'yellow', 'blue', 'red', 'yellow', 'gray', 'red', 'yellow', 'blue',
+            'red', 'yellow', 'gray', 'red', 'yellow', 'blue', 'red', 'yellow', 'gray', 'red',
+            'yellow', 'blue', 'red', 'yellow', 'gray', 'red', 'yellow', 'blue', 'red', 'yellow',
+            'gray', 'red', 'yellow', 'blue', 'red', 'yellow', 'gray', 'red', 'yellow', 'blue',
+            'red', 'yellow', 'gray', 'red', 'yellow', 'blue', 'red', 'yellow', '
